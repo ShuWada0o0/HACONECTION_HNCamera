@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.hirotoshin.myapplication.ScrollingActivity">
 
-    <ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:scrollbarAlwaysDrawVerticalTrack="true"
+              android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <ScrollView android:id="@+id/ScrollView01"
+                android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" >
+
+
+        <!-- 画面全体の内容をここに記述 -->
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:background="@null"
+            android:id="@+id/stampcalture"/>
 
-            <ImageButton
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@null"
-                android:id="@+id/stampEmotional"/>
-            <ImageButton
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@null"
-                android:id="@+id/stampphysics"/>
-            <ImageButton
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@null"
-                android:id="@+id/stampcalture"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:background="@null"
+            android:id="@+id/stampphysics"/>
 
-        </LinearLayout>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="20dp"
+            android:background="@null"
+            android:id="@+id/stampEmotional"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
 
-    </ScrollView>
 
-</RelativeLayout>
+    </LinearLayout>
+
+</ScrollView>
+
+</LinearLayout>
