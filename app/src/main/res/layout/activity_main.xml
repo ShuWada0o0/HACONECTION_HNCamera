@@ -19,16 +19,9 @@
         <ImageView
             android:id="@+id/imageView1"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="440dp"
             android:layout_centerHorizontal="true"
             android:scaleType="centerCrop" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView"
-            android:layout_weight="0.57"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -38,7 +31,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="back"
+                android:text="camera"
                 android:id="@+id/camera_button"
                 android:layout_alignParentBottom="true"
                 android:layout_toRightOf="@+id/buttonPanel"
@@ -47,7 +40,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="camera"
+                android:text="gallary"
                 android:id="@+id/buttonPanel"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"

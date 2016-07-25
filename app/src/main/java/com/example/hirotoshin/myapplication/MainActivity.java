@@ -7,10 +7,10 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.provider.MediaStore;
 
 
 public class MainActivity extends Activity {
@@ -22,10 +22,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setViews();
+        setbuttonListener();
     }
 
-    private void setViews() {
+    private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
         button1.setOnClickListener(button1_onClick);
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 
         Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, m_uri);
-
+        startActivityForResult( intentCamera, REQUEST_CHOOSER);
 
     }
 
@@ -81,36 +81,36 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CHOOSER) {
+            super.onActivityResult(requestCode, resultCode, data);
 
-            if (resultCode != RESULT_OK) {
-                // キャル時
-                return;
+            if (requestCode == REQUEST_CHOOSER) {
+
+                if (resultCode != RESULT_OK) {
+                    // キャル時
+                    return;
+                }
+
+                Uri resultUri = (data != null ? data.getData() : m_uri);
+
+                if (resultUri == null) {
+                    // 取得失敗
+                    return;
+                }
+
+                // ギャラリーへスキャンを促す
+                MediaScannerConnection.scanFile(
+                        this,
+                        new String[]{resultUri.getPath()},
+                        new String[]{"image/jpeg"},
+
+                        null
+                );
+
+                // 画像を設定
+                ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+                imageView.setImageURI(resultUri);
             }
-
-            Uri resultUri = (data != null ? data.getData() : m_uri);
-
-            if (resultUri == null) {
-                // 取得失敗
-                return;
-            }
-
-            // ギャラリーへスキャンを促す
-            MediaScannerConnection.scanFile(
-                    this,
-                    new String[]{resultUri.getPath()},
-                    new String[]{"image/jpeg"},
-
-                    null
-            );
-
-            // 画像を設定
-            ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-            imageView.setImageURI(resultUri);
-        }
     }
-
 
 }
