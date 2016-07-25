@@ -20,7 +20,8 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:id="@+id/imageButton"
-            android:layout_gravity="right"/>
+            android:layout_gravity="right"
+            android:background="@null"/>
 
         <ImageView
             android:id="@+id/imageView1"

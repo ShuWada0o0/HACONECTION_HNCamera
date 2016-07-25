@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 
@@ -23,6 +24,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setbuttonListener();
+        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
+        stampbutton.setImageResource(R.drawable.stampstamp2);
     }
 
     private void setbuttonListener() {
