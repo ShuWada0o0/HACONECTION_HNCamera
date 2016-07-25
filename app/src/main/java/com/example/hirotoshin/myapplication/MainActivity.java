@@ -31,8 +31,10 @@ public class MainActivity extends Activity {
     private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
+        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
+        stampbutton.setOnClickListener(stampbutton_onclick);
     }
 
     private View.OnClickListener button1_onClick = new View.OnClickListener() {
@@ -46,6 +48,14 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             playCamera();
+        }
+    };
+
+    private View.OnClickListener stampbutton_onclick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, ScrollingActivity.class);
+            startActivity(intent);
         }
     };
 
