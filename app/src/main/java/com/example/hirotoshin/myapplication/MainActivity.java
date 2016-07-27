@@ -9,15 +9,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 
 public class MainActivity extends Activity {
 
     private Uri m_uri;
     private static final int REQUEST_CHOOSER = 1000;
+    private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,21 +131,22 @@ public class MainActivity extends Activity {
         if(requestCode == 666){
             if(resultCode == Activity.RESULT_OK){
                 int flag = data.getIntExtra("stamp_number", -10);
+                LinearLayout linear = (LinearLayout)findViewById(R.id.liner1);
                 switch (flag){
                     case 1:
                         ImageView emotional = new ImageView(this);
                         emotional.setImageResource(R.drawable.stampemotional2);
-                        setContentView(emotional);
+                        linear.addView(emotional, new LinearLayout.LayoutParams(WC, WC));
                         break;
                     case 2:
                         ImageView physical = new ImageView(this);
                         physical.setImageResource(R.drawable.stampphysical2);
-                        setContentView(physical);
+                        linear.addView(physical, new LinearLayout.LayoutParams(WC, WC));
                         break;
                     case 3:
                         ImageView culture = new ImageView(this);
-                        culture.setImageResource(R.drawable.stampemotional2);
-                        setContentView(culture);
+                        culture.setImageResource(R.drawable.stumpculture2);
+                        linear.addView(culture, new LinearLayout.LayoutParams(WC, WC));
                         break;
                 }
             }
