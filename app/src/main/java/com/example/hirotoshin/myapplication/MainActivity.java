@@ -55,7 +55,8 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(MainActivity.this, ScrollingActivity.class);
-            startActivity(intent);
+            int requestcode = 666;
+            startActivityForResult(intent, requestcode);
         }
     };
 
@@ -124,6 +125,11 @@ public class MainActivity extends Activity {
                 ImageView imageView = (ImageView) findViewById(R.id.imageView1);
                 imageView.setImageURI(resultUri);
             }
+        if(requestCode == 666){
+            if(resultCode == Activity.RESULT_OK){
+                int flag = data.getIntExtra("stamp_number", -10);
+            }
+        }
     }
 
 }

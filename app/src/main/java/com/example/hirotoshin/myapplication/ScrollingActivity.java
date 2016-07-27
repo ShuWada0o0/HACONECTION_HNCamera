@@ -57,9 +57,10 @@ public class ScrollingActivity extends Activity {
     };
 
     private void selectstamp(int selected){
-        Intent intent = new Intent(ScrollingActivity.this, MainActivity.class);
+        Intent intent = new Intent();
         intent.putExtra("stamp_number", selected);
-        startActivity(intent);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
     }
 
 }
