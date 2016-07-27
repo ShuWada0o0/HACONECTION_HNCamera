@@ -128,6 +128,23 @@ public class MainActivity extends Activity {
         if(requestCode == 666){
             if(resultCode == Activity.RESULT_OK){
                 int flag = data.getIntExtra("stamp_number", -10);
+                switch (flag){
+                    case 1:
+                        ImageView emotional = new ImageView(this);
+                        emotional.setImageResource(R.drawable.stampemotional2);
+                        setContentView(emotional);
+                        break;
+                    case 2:
+                        ImageView physical = new ImageView(this);
+                        physical.setImageResource(R.drawable.stampphysical2);
+                        setContentView(physical);
+                        break;
+                    case 3:
+                        ImageView culture = new ImageView(this);
+                        culture.setImageResource(R.drawable.stampemotional2);
+                        setContentView(culture);
+                        break;
+                }
             }
         }
     }
