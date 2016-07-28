@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 
 public class MainActivity extends Activity {
@@ -131,22 +131,24 @@ public class MainActivity extends Activity {
         if(requestCode == 666){
             if(resultCode == Activity.RESULT_OK){
                 int flag = data.getIntExtra("stamp_number", -10);
-                LinearLayout linear = (LinearLayout)findViewById(R.id.liner1);
+                RelativeLayout relative= (RelativeLayout)findViewById(R.id.relative);
+                RelativeLayout.LayoutParams prams = new RelativeLayout.LayoutParams(WC,WC);
+                prams.addRule(RelativeLayout.CENTER_IN_PARENT);
                 switch (flag){
                     case 1:
                         ImageView emotional = new ImageView(this);
                         emotional.setImageResource(R.drawable.stampemotional2);
-                        linear.addView(emotional, new LinearLayout.LayoutParams(WC, WC));
+                        relative.addView(emotional, prams);
                         break;
                     case 2:
                         ImageView physical = new ImageView(this);
                         physical.setImageResource(R.drawable.stampphysical2);
-                        linear.addView(physical, new LinearLayout.LayoutParams(WC, WC));
+                        relative.addView(physical, prams);
                         break;
                     case 3:
                         ImageView culture = new ImageView(this);
                         culture.setImageResource(R.drawable.stumpculture2);
-                        linear.addView(culture, new LinearLayout.LayoutParams(WC, WC));
+                        relative.addView(culture, prams);
                         break;
                 }
             }
