@@ -11,9 +11,9 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 
 public class MainActivity extends Activity {
@@ -21,6 +21,9 @@ public class MainActivity extends Activity {
     private Uri m_uri;
     private static final int REQUEST_CHOOSER = 1000;
     private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
+    private final int EMO = 999;
+    private final int PHY = 998;
+    private final int CUL = 997;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,24 +134,37 @@ public class MainActivity extends Activity {
         if(requestCode == 666){
             if(resultCode == Activity.RESULT_OK){
                 int flag = data.getIntExtra("stamp_number", -10);
-                RelativeLayout relative= (RelativeLayout)findViewById(R.id.relative);
-                RelativeLayout.LayoutParams prams = new RelativeLayout.LayoutParams(WC,WC);
-                prams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                FrameLayout frame= (FrameLayout) findViewById(R.id.framelayout);
+                FrameLayout.LayoutParams prams = new FrameLayout.LayoutParams(WC,WC);
+                DragViewListener dvListener;
                 switch (flag){
                     case 1:
+                        int emo_id = View.generateViewId();
                         ImageView emotional = new ImageView(this);
                         emotional.setImageResource(R.drawable.stampemotional2);
-                        relative.addView(emotional, prams);
+                        emotional.setId(emo_id);
+                        frame.addView(emotional, prams);
+                        dvListener = new DragViewListener(emotional);
+                        emotional.setOnTouchListener(dvListener);
+
                         break;
                     case 2:
+                        int phy_id = View.generateViewId();
                         ImageView physical = new ImageView(this);
                         physical.setImageResource(R.drawable.stampphysical2);
-                        relative.addView(physical, prams);
+                        physical.setId(phy_id);
+                        frame.addView(physical, prams);
+                        dvListener = new DragViewListener(physical);
+                        physical.setOnTouchListener(dvListener);
                         break;
                     case 3:
+                        int cul_id = View.generateViewId();
                         ImageView culture = new ImageView(this);
                         culture.setImageResource(R.drawable.stumpculture2);
-                        relative.addView(culture, prams);
+                        culture.setId(cul_id);
+                        frame.addView(culture, prams);
+                        dvListener = new DragViewListener(culture);
+                        culture.setOnTouchListener(dvListener);
                         break;
                 }
             }
