@@ -9,27 +9,35 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 
 public class MainActivity extends Activity {
 
     private Uri m_uri;
     private static final int REQUEST_CHOOSER = 1000;
+    private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setbuttonListener();
+        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
+        stampbutton.setImageResource(R.drawable.stampstamp2);
     }
 
     private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
+        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
+        stampbutton.setOnClickListener(stampbutton_onclick);
     }
 
     private View.OnClickListener button1_onClick = new View.OnClickListener() {
@@ -43,6 +51,15 @@ public class MainActivity extends Activity {
         @Override
         public void onClick(View v) {
             playCamera();
+        }
+    };
+
+    private View.OnClickListener stampbutton_onclick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(MainActivity.this, ScrollingActivity.class);
+            int requestcode = 666;
+            startActivityForResult(intent, requestcode);
         }
     };
 
@@ -111,6 +128,31 @@ public class MainActivity extends Activity {
                 ImageView imageView = (ImageView) findViewById(R.id.imageView1);
                 imageView.setImageURI(resultUri);
             }
+        if(requestCode == 666){
+            if(resultCode == Activity.RESULT_OK){
+                int flag = data.getIntExtra("stamp_number", -10);
+                RelativeLayout relative= (RelativeLayout)findViewById(R.id.relative);
+                RelativeLayout.LayoutParams prams = new RelativeLayout.LayoutParams(WC,WC);
+                prams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                switch (flag){
+                    case 1:
+                        ImageView emotional = new ImageView(this);
+                        emotional.setImageResource(R.drawable.stampemotional2);
+                        relative.addView(emotional, prams);
+                        break;
+                    case 2:
+                        ImageView physical = new ImageView(this);
+                        physical.setImageResource(R.drawable.stampphysical2);
+                        relative.addView(physical, prams);
+                        break;
+                    case 3:
+                        ImageView culture = new ImageView(this);
+                        culture.setImageResource(R.drawable.stumpculture2);
+                        relative.addView(culture, prams);
+                        break;
+                }
+            }
+        }
     }
 
 }
