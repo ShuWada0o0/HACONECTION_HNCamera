@@ -24,14 +24,21 @@
             android:layout_gravity="right"
             android:background="@null"/>
 
-        <ImageView
-            android:id="@+id/imageView1"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="340dp"
-            android:layout_centerHorizontal="true"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content"
+            android:id="@+id/framelayout">
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="match_parent"
+                android:layout_height="420dp"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop" />
+        </FrameLayout>
 
     </LinearLayout>
+
+
 
     <LinearLayout
         android:orientation="horizontal"
