@@ -1,12 +1,16 @@
 package com.example.hirotoshin.myapplication;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +18,13 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends Activity {
 
@@ -24,6 +34,7 @@ public class MainActivity extends Activity {
     private final int EMO = 999;
     private final int PHY = 998;
     private final int CUL = 997;
+    private final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +48,11 @@ public class MainActivity extends Activity {
     private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
+        Button save = (Button)findViewById(R.id.Savebutton);
         ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
+        save.setOnClickListener(save_click);
         stampbutton.setOnClickListener(stampbutton_onclick);
     }
 
@@ -63,6 +76,13 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(MainActivity.this, ScrollingActivity.class);
             int requestcode = 666;
             startActivityForResult(intent, requestcode);
+        }
+    };
+
+    private View.OnClickListener save_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            run();
         }
     };
 
@@ -169,6 +189,86 @@ public class MainActivity extends Activity {
                 }
             }
         }
+    }
+
+    public void run() {
+        handler.post(new Runnable() {
+            public void run() {
+                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+                final Date date = new Date(System.currentTimeMillis());
+                String filename = Environment.getExternalStorageDirectory() + "/HN Camera/" + df.format(date) + ".png";
+
+                final File file = new File(filename);
+                final File dir = new File(Environment.getExternalStorageDirectory() + "/HN Camera/");
+
+                if (!dir.exists()) {
+                    boolean result = dir.mkdirs();
+                    System.out.println(result);
+                    dir.mkdirs();
+                }
+                file.getParentFile().mkdir();
+                saveCapture(findViewById(android.R.id.content), file);
+                Toast.makeText(MainActivity.this, df.format(date), Toast.LENGTH_SHORT).show();
+                String[] filePath = {filename};
+                String[] mimeType = {"image/*"};
+                MediaScannerConnection.scanFile(getApplicationContext(), filePath, mimeType, null);
+            }
+        });
+    }
+
+    private void createFolderSaveImage(Bitmap imageToSave, String fileName) {
+        String folderPath = Environment.getExternalStorageDirectory() + "/NewFolder/";
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        File file = new File(folder, fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public void saveCapture(View view, File file) {
+        Bitmap capture = getViewCapture(view);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file, false);
+            capture.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+            final Date date = new Date(System.currentTimeMillis());
+            registAndroidDB("/strage/emulated/O/Pictures/" + df.format(date) + ".png");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fos == null) return;
+            try {
+                fos.close();
+            } catch (Exception ie) {
+                fos = null;
+            }
+        }
+    }
+
+    private void registAndroidDB(String path) {
+        ContentValues values = new ContentValues();
+        ContentResolver contentResolver = this.getContentResolver();
+        values.put(MediaStore.Images.Media.MIME_TYPE, "ge/jpeg");
+        values.put("_date", path);
+        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+
+    public Bitmap getViewCapture(View view) {
+        view.setDrawingCacheEnabled(true);
+        Bitmap cache = view.getDrawingCache();
+        if (cache == null) return null;
+        Bitmap screen_shot = Bitmap.createBitmap(cache);
+        view.setDrawingCacheEnabled(false);
+        ImageView imageview = (ImageView) findViewById(R.id.imageView1);
+        imageview.setImageBitmap(screen_shot);
+        return screen_shot;
     }
 
 }
