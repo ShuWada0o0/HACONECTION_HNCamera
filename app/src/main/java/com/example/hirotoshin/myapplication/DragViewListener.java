@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 /**
+ * //署名　2016/07/29 公立はこだて未来大学　学部3年　高度ICTコース　永井陽太
  * Created by nagaiyouta on 2016/07/28.
  */
 public class DragViewListener implements View.OnTouchListener {

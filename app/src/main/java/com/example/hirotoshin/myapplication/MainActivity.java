@@ -266,9 +266,10 @@ public class MainActivity extends Activity {
         if (cache == null) return null;
         Bitmap screen_shot = Bitmap.createBitmap(cache);
         view.setDrawingCacheEnabled(false);
-        ImageView imageview = (ImageView) findViewById(R.id.imageView1);
-        imageview.setImageBitmap(screen_shot);
+//        ImageView imageview = (ImageView) findViewById(R.id.imageView1);
+//        imageview.setImageBitmap(screen_shot);
         return screen_shot;
     }
 
 }
+
