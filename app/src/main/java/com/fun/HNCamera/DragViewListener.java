@@ -1,4 +1,4 @@
-package com.example.hirotoshin.myapplication;
+package com.fun.HNCamera;
 
 import android.view.MotionEvent;
 import android.view.View;

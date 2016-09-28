@@ -1,10 +1,13 @@
-package com.example.hirotoshin.myapplication;
+package com.fun.HNCamera;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import com.fun.HNCamera.MainActivity;
+import com.fun.HNCamera.R;
 
 public class startActivity extends AppCompatActivity {
 

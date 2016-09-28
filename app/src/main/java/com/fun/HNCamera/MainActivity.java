@@ -1,10 +1,12 @@
-package com.example.hirotoshin.myapplication;
+package com.fun.HNCamera;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -18,6 +20,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,6 +29,8 @@ import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.fun.HNCamera.R;
 
 public class MainActivity extends Activity {
 
@@ -89,42 +95,28 @@ public class MainActivity extends Activity {
     private void playCamera() {
 
         //カメラの起動Intentの用意
-        String photoName = System.currentTimeMillis() + ".jpg";
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.Images.Media.TITLE, photoName);
-        contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        m_uri = getContentResolver()
-                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-
-        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intentCamera.putExtra(MediaStore.EXTRA_OUTPUT, m_uri);
-        startActivityForResult( intentCamera, REQUEST_CHOOSER);
+        Intent intent = new Intent();
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        startActivityForResult(intent, 0);
 
     }
 
     private void showGallery() {
         // ギャラリー用のIntent作成
-        Intent intentGallery;
-        if (Build.VERSION.SDK_INT < 19) {
-            intentGallery = new Intent(Intent.ACTION_GET_CONTENT);
-            intentGallery.setType("image/*");
-        } else {
-            intentGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intentGallery.addCategory(Intent.CATEGORY_OPENABLE);
-            intentGallery.setType("image/jpeg");
-        }
-        Intent intentCamera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Intent intent = Intent.createChooser(intentCamera, "画像の選択");
-        intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{intentGallery});
-        startActivityForResult(intent, REQUEST_CHOOSER);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, 0);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
             super.onActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == REQUEST_CHOOSER) {
+            if (requestCode == 0) {
 
                 if (resultCode != RESULT_OK) {
                     // キャル時
@@ -138,7 +130,6 @@ public class MainActivity extends Activity {
                     return;
                 }
 
-                // ギャラリーへスキャンを促す
                 MediaScannerConnection.scanFile(
                         this,
                         new String[]{resultUri.getPath()},
@@ -271,5 +262,44 @@ public class MainActivity extends Activity {
         return screen_shot;
     }
 
+
+    public void onRadioButtonClicked(View view) {
+        //背景(layoutView1)の状態を取得(インタンスを生成)
+        LinearLayout layout = (LinearLayout) findViewById(R.id.liner1);
+        // ラジオボタンの選択状態を取得
+        RadioButton radioButton = (RadioButton) view;
+        // getId()でラジオボタンを識別し、ラジオボタンごとの処理を行う
+        //押してあるか否か
+        boolean checked = radioButton.isChecked();
+        //ボタンの状態(id)を取得
+        switch (radioButton.getId()) {
+            //rdoItem1(1つ目)
+            case R.id.rdoItem1:
+                if (checked) {
+                    Toast.makeText(getApplicationContext(), "Nothing", Toast.LENGTH_SHORT).show();
+                    //背景色を白に変更
+                    layout.setBackgroundColor(Color.rgb(255,255,255));
+                }
+                break;
+            //rdoItem2(2つ目)
+            case R.id.rdoItem2:
+                if (checked) {
+                    Toast.makeText(getApplicationContext(), "Positive", Toast.LENGTH_SHORT).show();
+                    //背景色を青に変更
+                    layout.setBackgroundColor(Color.rgb(255,200,0));
+                }
+                break;
+            //rdoItem3(3つ目)
+            case R.id.rdoItem3:
+                if (checked) {
+                    Toast.makeText(getApplicationContext(), "Negative", Toast.LENGTH_SHORT).show();
+                    //背景色を赤に変更
+                    layout.setBackgroundColor(Color.rgb(190,10,120));
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
