@@ -2,3 +2,4 @@
 ###Developer
 
 Shu wada
+Shunto Takei
