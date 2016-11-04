@@ -103,6 +103,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="83dp"
+                    android:background="#64FFFFFF"
                     android:id="@+id/editText" />
 
             </LinearLayout>
