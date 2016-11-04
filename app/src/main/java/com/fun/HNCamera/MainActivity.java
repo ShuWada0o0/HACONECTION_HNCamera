@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -14,14 +15,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,35 +37,119 @@ import java.util.Date;
 
 import com.fun.HNCamera.R;
 
+import static android.R.attr.tag;
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
+
 public class MainActivity extends Activity {
 
     private Uri m_uri;
+    private Uri fileUri;
     private static final int REQUEST_CHOOSER = 1000;
     private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
     private final int EMO = 999;
     private final int PHY = 998;
     private final int CUL = 997;
     private final Handler handler = new Handler();
+    private int currentColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setbuttonListener();
-        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
-        stampbutton.setImageResource(R.drawable.stampstamp2);
+        //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
+        //stampbutton.setImageResource(R.drawable.stampstamp2);
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setSelected(false);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                setColor(i);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+        SeekBar seekbar = (SeekBar) findViewById(R.id.seekBar);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                setHSV(i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+    }
+
+    private void setHSV(float selected) {
+        LinearLayout layout = (LinearLayout) findViewById(R.id.liner1);
+        float[] hsv = new float[3];
+        Color.colorToHSV(currentColor, hsv);
+        hsv[2] =(float)0.5+  selected  / 200;
+        layout.setBackgroundColor(Color.HSVToColor(hsv));
+    }
+
+    private void setColor(int selected) {
+        //背景(layoutView1)の状態を取得(インタンスを生成)
+        LinearLayout layout = (LinearLayout) findViewById(R.id.liner1);
+        //ボタンの状態(id)を取得
+        switch (selected) {
+            //0(1つ目)
+            case 0:
+                Toast.makeText(getApplicationContext(), "Nothing", Toast.LENGTH_SHORT).show();
+                //背景色を白に変更
+                currentColor = Color.rgb(255,255,255);
+                break;
+            //(12つ目)
+            case 1:
+                Toast.makeText(getApplicationContext(), "Positive", Toast.LENGTH_SHORT).show();
+                //背景色を青に変更
+
+                currentColor = Color.rgb(255,200,0);
+                break;
+            //2(3つ目)
+            case 2:
+                Toast.makeText(getApplicationContext(), "Negative", Toast.LENGTH_SHORT).show();
+                //背景色を赤に変更
+                currentColor = Color.rgb(190,10,120);
+                break;
+        }
+        layout.setBackgroundColor(currentColor);
     }
 
     private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
         Button save = (Button)findViewById(R.id.Savebutton);
-        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
+        //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
+        ImageButton Culture = (ImageButton)findViewById(R.id.Culture);
+        ImageButton Physical = (ImageButton)findViewById(R.id.Physical);
+        ImageButton Emotional = (ImageButton)findViewById(R.id.Emotional);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
         save.setOnClickListener(save_click);
-        stampbutton.setOnClickListener(stampbutton_onclick);
+        //Culture.setOnClickListener(_onClick);
+        //stampbutton.setOnClickListener(stampbutton_onclick);
     }
+
+
+    /*private View.OnClickListener Culture_onClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(i == 1){
+                i = 2;
+                ImageButton.setImageResource(R.drawable.culture未選択);
+            }else if(i == 2){
+                i = 0;
+                ImageButton.setImageResource(R.drawable.eatenapple);
+            }else{
+                ImageButton.setImageResource(R.drawable.eatenapple);
+            }
+        }
+    };*/
 
     private View.OnClickListener button1_onClick = new View.OnClickListener() {
         @Override
@@ -137,10 +226,13 @@ public class MainActivity extends Activity {
 
                         null
                 );
-
                 // 画像を設定
                 ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-                imageView.setImageURI(resultUri);
+                int orientation = ImageUtil.getOrientation(resultUri);
+                Log.d("tag","orientation=" + orientation );
+                Bitmap bmp = ImageUtil.createBitmapFromUri(this, resultUri,orientation);
+                imageView.setImageBitmap(bmp);
+                //imageView.setImageURI(resultUri);
             }
         if(requestCode == 666){
             if(resultCode == Activity.RESULT_OK){
@@ -264,42 +356,12 @@ public class MainActivity extends Activity {
 
 
     public void onRadioButtonClicked(View view) {
-        //背景(layoutView1)の状態を取得(インタンスを生成)
-        LinearLayout layout = (LinearLayout) findViewById(R.id.liner1);
         // ラジオボタンの選択状態を取得
         RadioButton radioButton = (RadioButton) view;
         // getId()でラジオボタンを識別し、ラジオボタンごとの処理を行う
         //押してあるか否か
         boolean checked = radioButton.isChecked();
-        //ボタンの状態(id)を取得
-        switch (radioButton.getId()) {
-            //rdoItem1(1つ目)
-            case R.id.rdoItem1:
-                if (checked) {
-                    Toast.makeText(getApplicationContext(), "Nothing", Toast.LENGTH_SHORT).show();
-                    //背景色を白に変更
-                    layout.setBackgroundColor(Color.rgb(255,255,255));
-                }
-                break;
-            //rdoItem2(2つ目)
-            case R.id.rdoItem2:
-                if (checked) {
-                    Toast.makeText(getApplicationContext(), "Positive", Toast.LENGTH_SHORT).show();
-                    //背景色を青に変更
-                    layout.setBackgroundColor(Color.rgb(255,200,0));
-                }
-                break;
-            //rdoItem3(3つ目)
-            case R.id.rdoItem3:
-                if (checked) {
-                    Toast.makeText(getApplicationContext(), "Negative", Toast.LENGTH_SHORT).show();
-                    //背景色を赤に変更
-                    layout.setBackgroundColor(Color.rgb(190,10,120));
-                }
-                break;
-            default:
-                break;
-        }
+
     }
 }
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HN Camera</string>
+    <string name="app_name">HN Camera＿test</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -91,4 +91,10 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string-array name="list">
+        <item>Noting</item>
+        <item>Positive</item>
+        <item>Negative</item>
+
+    </string-array>
 </resources>
