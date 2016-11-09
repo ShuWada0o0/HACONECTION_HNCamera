@@ -49,28 +49,39 @@
                     android:layout_width="225dp">
 
                     <ImageButton
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/stumpculture2"
+                        android:src="@drawable/stampcluturenone"
                         android:layout_weight="1"
                         android:id="@+id/Culture"
-                        style="?android:attr/borderlessButtonStyle"/>
+                        style="@android:style/Widget.ImageButton"
+                        android:scaleType="centerCrop"
+                        android:background="@null"
+                        />
 
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/stampphysical2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/stampphysicalnone"
                         android:layout_weight="1"
                         android:id="@+id/Physical"
-                        style="?android:attr/borderlessButtonStyle"/>
+                        style="@android:style/Widget.ImageButton"
+                        android:scaleType="centerCrop"
+                        android:backgroundTint="@android:color/background_light"
+                        android:background="@null"
+                        />
 
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/stampemotional2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/stampemotionnone"
                         android:id="@+id/Emotional"
                         android:layout_weight="1"
-                        style="?android:attr/borderlessButtonStyle"/>
+                        style="@android:style/Widget.ImageButton"
+                        android:scaleType="centerCrop"
+                        android:backgroundTint="@android:color/background_light"
+                        android:background="@null"
+                        />
                 </LinearLayout>
 
                 <LinearLayout

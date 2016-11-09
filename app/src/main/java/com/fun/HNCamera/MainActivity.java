@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ import com.fun.HNCamera.R;
 import static android.R.attr.tag;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener {
 
     private Uri m_uri;
     private Uri fileUri;
@@ -51,14 +52,18 @@ public class MainActivity extends Activity {
     private final int CUL = 997;
     private final Handler handler = new Handler();
     private int currentColor;
+    private ImageButton Physical;
+    private ImageButton Culture;
+    private ImageButton Emotional;
+    private int physicalStatus = 0;
+    private int cultureStatus = 0;
+    private int emotionalStatus = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setbuttonListener();
-        //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
-        //stampbutton.setImageResource(R.drawable.stampstamp2);
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setSelected(false);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -66,8 +71,10 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 setColor(i);
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
         SeekBar seekbar = (SeekBar) findViewById(R.id.seekBar);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -77,10 +84,12 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
     }
 
@@ -88,7 +97,7 @@ public class MainActivity extends Activity {
         LinearLayout layout = (LinearLayout) findViewById(R.id.liner1);
         float[] hsv = new float[3];
         Color.colorToHSV(currentColor, hsv);
-        hsv[2] =(float)0.5+  selected  / 200;
+        hsv[2] = (float) 0.5 + selected / 200;
         layout.setBackgroundColor(Color.HSVToColor(hsv));
     }
 
@@ -101,20 +110,20 @@ public class MainActivity extends Activity {
             case 0:
                 Toast.makeText(getApplicationContext(), "Nothing", Toast.LENGTH_SHORT).show();
                 //背景色を白に変更
-                currentColor = Color.rgb(255,255,255);
+                currentColor = Color.rgb(255, 255, 255);
                 break;
             //(12つ目)
             case 1:
                 Toast.makeText(getApplicationContext(), "Positive", Toast.LENGTH_SHORT).show();
                 //背景色を青に変更
 
-                currentColor = Color.rgb(255,200,0);
+                currentColor = Color.rgb(255, 200, 0);
                 break;
             //2(3つ目)
             case 2:
                 Toast.makeText(getApplicationContext(), "Negative", Toast.LENGTH_SHORT).show();
                 //背景色を赤に変更
-                currentColor = Color.rgb(190,10,120);
+                currentColor = Color.rgb(190, 10, 120);
                 break;
         }
         layout.setBackgroundColor(currentColor);
@@ -123,11 +132,14 @@ public class MainActivity extends Activity {
     private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
-        Button save = (Button)findViewById(R.id.Savebutton);
-        //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
-        ImageButton Culture = (ImageButton)findViewById(R.id.Culture);
-        ImageButton Physical = (ImageButton)findViewById(R.id.Physical);
-        ImageButton Emotional = (ImageButton)findViewById(R.id.Emotional);
+        Button save = (Button) findViewById(R.id.Savebutton);
+//        ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
+        Culture = (ImageButton) findViewById(R.id.Culture);
+        Culture.setOnClickListener(this);
+        Physical = (ImageButton) findViewById(R.id.Physical);
+        Physical.setOnClickListener(this);
+        Emotional = (ImageButton) findViewById(R.id.Emotional);
+        Emotional.setOnClickListener(this);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
         save.setOnClickListener(save_click);
@@ -135,6 +147,21 @@ public class MainActivity extends Activity {
         //stampbutton.setOnClickListener(stampbutton_onclick);
     }
 
+
+
+/*
+    public  void setButton1_onClick(){
+        System.out.println("クリック");
+    }*/
+    /*
+    public void onClick(View v){
+        switch(v.getId()){
+            case R.id.button1:
+                //処理
+                break;
+        }
+    }
+*/
 
     /*private View.OnClickListener Culture_onClick = new View.OnClickListener() {
         @Override
@@ -203,48 +230,48 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-            super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
 
-            if (requestCode == 0) {
+        if (requestCode == 0) {
 
-                if (resultCode != RESULT_OK) {
-                    // キャル時
-                    return;
-                }
-
-                Uri resultUri = (data != null ? data.getData() : m_uri);
-
-                if (resultUri == null) {
-                    // 取得失敗
-                    return;
-                }
-
-                MediaScannerConnection.scanFile(
-                        this,
-                        new String[]{resultUri.getPath()},
-                        new String[]{"image/jpeg"},
-
-                        null
-                );
-                // 画像を設定
-                ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-                int orientation = ImageUtil.getOrientation(resultUri);
-                Log.d("tag","orientation=" + orientation );
-                Bitmap bmp = ImageUtil.createBitmapFromUri(this, resultUri,orientation);
-                imageView.setImageBitmap(bmp);
-                //imageView.setImageURI(resultUri);
+            if (resultCode != RESULT_OK) {
+                // キャル時
+                return;
             }
-        if(requestCode == 666){
-            if(resultCode == Activity.RESULT_OK){
+
+            Uri resultUri = (data != null ? data.getData() : m_uri);
+
+            if (resultUri == null) {
+                // 取得失敗
+                return;
+            }
+
+            MediaScannerConnection.scanFile(
+                    this,
+                    new String[]{resultUri.getPath()},
+                    new String[]{"image/jpeg"},
+
+                    null
+            );
+            // 画像を設定
+            ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+            int orientation = ImageUtil.getOrientation(resultUri);
+            Log.d("tag", "orientation=" + orientation);
+            Bitmap bmp = ImageUtil.createBitmapFromUri(this, resultUri, orientation);
+            imageView.setImageBitmap(bmp);
+            //imageView.setImageURI(resultUri);
+        }
+        if (requestCode == 666) {
+            if (resultCode == Activity.RESULT_OK) {
                 int flag = data.getIntExtra("stamp_number", -10);
-                FrameLayout frame= (FrameLayout) findViewById(R.id.framelayout);
-                FrameLayout.LayoutParams prams = new FrameLayout.LayoutParams(WC,WC);
+                FrameLayout frame = (FrameLayout) findViewById(R.id.framelayout);
+                FrameLayout.LayoutParams prams = new FrameLayout.LayoutParams(WC, WC);
                 DragViewListener dvListener;
-                switch (flag){
+                switch (flag) {
                     case 1:
                         int emo_id = View.generateViewId();
                         ImageView emotional = new ImageView(this);
-                        emotional.setImageResource(R.drawable.stampemotional2);
+                        emotional.setImageResource(R.drawable.stampemotionnone);
                         emotional.setId(emo_id);
                         frame.addView(emotional, prams);
                         dvListener = new DragViewListener(emotional);
@@ -254,7 +281,7 @@ public class MainActivity extends Activity {
                     case 2:
                         int phy_id = View.generateViewId();
                         ImageView physical = new ImageView(this);
-                        physical.setImageResource(R.drawable.stampphysical2);
+                        physical.setImageResource(R.drawable.stampphysicalnone);
                         physical.setId(phy_id);
                         frame.addView(physical, prams);
                         dvListener = new DragViewListener(physical);
@@ -263,7 +290,7 @@ public class MainActivity extends Activity {
                     case 3:
                         int cul_id = View.generateViewId();
                         ImageView culture = new ImageView(this);
-                        culture.setImageResource(R.drawable.stumpculture2);
+                        culture.setImageResource(R.drawable.stampcluturenone);
                         culture.setId(cul_id);
                         frame.addView(culture, prams);
                         dvListener = new DragViewListener(culture);
@@ -363,5 +390,45 @@ public class MainActivity extends Activity {
         boolean checked = radioButton.isChecked();
 
     }
-}
+
+    @Override
+    public void onClick(View v) {
+        if (v == Physical) {
+            if (physicalStatus % 3 == 0) {
+                Physical.setImageResource(R.drawable.stampphysical);
+                physicalStatus++;
+            } else if (physicalStatus % 3 == 1) {
+                Physical.setImageResource(R.drawable.stampphysicalbad);
+                physicalStatus++;
+            } else if (physicalStatus % 3 == 2) {
+                Physical.setImageResource(R.drawable.stampphysicalnone);
+                physicalStatus++;
+            }
+
+        } else if (v == Culture) {
+            if (cultureStatus % 3 == 0) {
+                Culture.setImageResource(R.drawable.stampculture);
+                cultureStatus++;
+            } else if (cultureStatus % 3 == 1) {
+                Culture.setImageResource(R.drawable.stampculturebad);
+                cultureStatus++;
+            } else if (cultureStatus % 3 == 2) {
+                Culture.setImageResource(R.drawable.stampcluturenone);
+                cultureStatus++;
+            }
+
+        }else if(v == Emotional){
+            if(emotionalStatus%3==0) {
+                Emotional.setImageResource(R.drawable.stampemotion);
+                emotionalStatus++;
+            }else if(emotionalStatus%3==1){
+                Emotional.setImageResource(R.drawable.stampemotionbad);
+                emotionalStatus++;
+            }else if(emotionalStatus%3==2){
+                Emotional.setImageResource(R.drawable.stampemotionnone);
+                emotionalStatus++;
+            }
+        }
+        }
+    }
 
