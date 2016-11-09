@@ -19,41 +19,45 @@ import static android.content.ContentValues.TAG;
  */
 
 public class ImageUtil {
-    public static Bitmap createBitmapFromUri(MainActivity context, Uri uri, int ori) {
-        ContentResolver contentResolver = context.getContentResolver();
-        InputStream inputStream = null;
-        BitmapFactory.Options imageOptions;
+    public static Bitmap createBitmap(String path, int ori) {
+        //ContentResolver contentResolver = context.getContentResolver();
+        BitmapFactory.Options options = new BitmapFactory.Options();
         Bitmap imageBitmap = null;
 
         // メモリ上に画像を読み込まず、画像サイズ情報のみを取得する
-        try {
-            inputStream = contentResolver.openInputStream(uri);
-            imageOptions = new BitmapFactory.Options();
-            imageOptions.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(inputStream, null, imageOptions);
-            assert inputStream != null;
-            inputStream.close();
-            // もし読み込む画像が大きかったら縮小して読み込む
-            inputStream = contentResolver.openInputStream(uri);
-            if (imageOptions.outWidth > 2048 && imageOptions.outHeight > 2048) {
-                imageOptions = new BitmapFactory.Options();
-                imageOptions.inSampleSize = 2;
-                imageBitmap = BitmapFactory.decodeStream(inputStream, null, imageOptions);
-            } else {
-                imageBitmap = BitmapFactory.decodeStream(inputStream, null, null);
-            }
-            inputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        options.inJustDecodeBounds = true;
+        imageBitmap = BitmapFactory.decodeFile(path, options);
+        if (imageBitmap == null) {
+            Log.d("tag","imageBitmapに入ってない");
         }
-        // 画像の横、縦サイズを取得
-        int imageWidth = imageBitmap.getWidth();
-        int imageHeight = imageBitmap.getHeight();
+        // もし読み込む画像が大きかったら縮小して読み込む
+        //inputStream = contentResolver.openInputStream(uri);
+        int imageHeight = options.outHeight;
+        Log.d("tag",""+imageHeight);
+        int imageWidth = options.outWidth;
+        Log.d("tag",""+imageWidth);
+        String imageType = options.outMimeType;
+        int inSampleSize = calculateInSampleSize(options, imageWidth, imageHeight);
+        Log.d("tag","inSampleSize = "+inSampleSize);
+        options.inJustDecodeBounds = false;
+        if (inSampleSize > 1) {
+            options.inSampleSize = inSampleSize;
+            imageBitmap = BitmapFactory.decodeFile(path, options);
+            if (imageBitmap == null) {
+                Log.d("tag","imageBitmap2に入ってない");
+            }
+        } else {
+            imageBitmap = BitmapFactory.decodeFile(path, options);
+            if (imageBitmap == null) {
+                Log.d("tag","imageBitmap3に入ってない");
+            }
+        }
 
         // Matrix インスタンス生成
         Matrix matrix = new Matrix();
+
+        imageHeight = options.outHeight;
+        imageWidth = options.outWidth;
 
         // 画像中心を基点にori度回転
         matrix.setRotate(ori, imageWidth/2, imageHeight/2);
@@ -64,11 +68,29 @@ public class ImageUtil {
         return imageBitmap2;
     }
 
-    public static int getOrientation(Uri uri) {
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+
+        // 画像の元サイズ
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            if (width > height) {
+                inSampleSize = Math.round((float)height / (float)reqHeight);
+            } else {
+                inSampleSize = Math.round((float)width / (float)reqWidth);
+            }
+        }
+        return inSampleSize;
+    }
+
+    public static int getOrientation(String path) {
         ExifInterface exifInterface;
 
         try {
-            exifInterface = new ExifInterface(uri.getPath());
+            exifInterface = new ExifInterface(path);
         } catch (IOException e) {
             Log.d("tag","Exif取れなかったよ" );
             return 0;
