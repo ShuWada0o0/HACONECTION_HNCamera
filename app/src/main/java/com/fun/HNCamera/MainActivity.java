@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,7 +15,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +37,14 @@ import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.StringTokenizer;
 
 import com.fun.HNCamera.R;
 
+import static android.R.attr.data;
 import static android.R.attr.tag;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
+
 
 public class MainActivity extends Activity {
 
@@ -51,12 +57,16 @@ public class MainActivity extends Activity {
     private final int CUL = 997;
     private final Handler handler = new Handler();
     private int currentColor;
-
+    private static final int BELOW_JELLYBEAN = -1;
+    private static final int ABOVE_KITKAT = 1;
+    private static final int CAMERA_CAPTURE = 2;
+    ImageView imageView1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setbuttonListener();
+
         //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
         //stampbutton.setImageResource(R.drawable.stampstamp2);
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -66,8 +76,10 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 setColor(i);
             }
+
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
         SeekBar seekbar = (SeekBar) findViewById(R.id.seekBar);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -77,10 +89,12 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
     }
 
@@ -88,7 +102,7 @@ public class MainActivity extends Activity {
         LinearLayout layout = (LinearLayout) findViewById(R.id.liner1);
         float[] hsv = new float[3];
         Color.colorToHSV(currentColor, hsv);
-        hsv[2] =(float)0.5+  selected  / 200;
+        hsv[2] = (float) 0.5 + selected / 200;
         layout.setBackgroundColor(Color.HSVToColor(hsv));
     }
 
@@ -101,20 +115,20 @@ public class MainActivity extends Activity {
             case 0:
                 Toast.makeText(getApplicationContext(), "Nothing", Toast.LENGTH_SHORT).show();
                 //背景色を白に変更
-                currentColor = Color.rgb(255,255,255);
+                currentColor = Color.rgb(255, 255, 255);
                 break;
             //(12つ目)
             case 1:
                 Toast.makeText(getApplicationContext(), "Positive", Toast.LENGTH_SHORT).show();
                 //背景色を青に変更
 
-                currentColor = Color.rgb(255,200,0);
+                currentColor = Color.rgb(255, 200, 0);
                 break;
             //2(3つ目)
             case 2:
                 Toast.makeText(getApplicationContext(), "Negative", Toast.LENGTH_SHORT).show();
                 //背景色を赤に変更
-                currentColor = Color.rgb(190,10,120);
+                currentColor = Color.rgb(190, 10, 120);
                 break;
         }
         layout.setBackgroundColor(currentColor);
@@ -123,11 +137,11 @@ public class MainActivity extends Activity {
     private void setbuttonListener() {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
-        Button save = (Button)findViewById(R.id.Savebutton);
+        Button save = (Button) findViewById(R.id.Savebutton);
         //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
-        ImageButton Culture = (ImageButton)findViewById(R.id.Culture);
-        ImageButton Physical = (ImageButton)findViewById(R.id.Physical);
-        ImageButton Emotional = (ImageButton)findViewById(R.id.Emotional);
+        ImageButton Culture = (ImageButton) findViewById(R.id.Culture);
+        ImageButton Physical = (ImageButton) findViewById(R.id.Physical);
+        ImageButton Emotional = (ImageButton) findViewById(R.id.Emotional);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
         save.setOnClickListener(save_click);
@@ -182,12 +196,17 @@ public class MainActivity extends Activity {
     };
 
     private void playCamera() {
-
         //カメラの起動Intentの用意
         Intent intent = new Intent();
         intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
-        startActivityForResult(intent, 0);
+        final Date date = new Date(System.currentTimeMillis());
+        final SimpleDateFormat dataFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
+        final String filename = dataFormat.format(date) + ".jpg";
+        Uri mSaveUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory().toString() + "/DCIM/Camera", filename));
+        //Uri mSaveUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/tmp.jpg"));
+        //intent.putExtra(MediaStore.EXTRA_OUTPUT, mSaveUri);
+        startActivityForResult(intent, CAMERA_CAPTURE);
 
     }
 
@@ -196,82 +215,99 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, Build.VERSION.SDK_INT < 19 ? BELOW_JELLYBEAN : ABOVE_KITKAT);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-            super.onActivityResult(requestCode, resultCode, data);
-
-            if (requestCode == 0) {
-
-                if (resultCode != RESULT_OK) {
-                    // キャル時
-                    return;
-                }
-
-                Uri resultUri = (data != null ? data.getData() : m_uri);
-
-                if (resultUri == null) {
-                    // 取得失敗
-                    return;
-                }
-
-                MediaScannerConnection.scanFile(
-                        this,
-                        new String[]{resultUri.getPath()},
-                        new String[]{"image/jpeg"},
-
-                        null
-                );
-                // 画像を設定
-                ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-                int orientation = ImageUtil.getOrientation(resultUri);
-                Log.d("tag","orientation=" + orientation );
-                Bitmap bmp = ImageUtil.createBitmapFromUri(this, resultUri,orientation);
-                imageView.setImageBitmap(bmp);
-                //imageView.setImageURI(resultUri);
-            }
-        if(requestCode == 666){
-            if(resultCode == Activity.RESULT_OK){
-                int flag = data.getIntExtra("stamp_number", -10);
-                FrameLayout frame= (FrameLayout) findViewById(R.id.framelayout);
-                FrameLayout.LayoutParams prams = new FrameLayout.LayoutParams(WC,WC);
-                DragViewListener dvListener;
-                switch (flag){
-                    case 1:
-                        int emo_id = View.generateViewId();
-                        ImageView emotional = new ImageView(this);
-                        emotional.setImageResource(R.drawable.stampemotional2);
-                        emotional.setId(emo_id);
-                        frame.addView(emotional, prams);
-                        dvListener = new DragViewListener(emotional);
-                        emotional.setOnTouchListener(dvListener);
-
-                        break;
-                    case 2:
-                        int phy_id = View.generateViewId();
-                        ImageView physical = new ImageView(this);
-                        physical.setImageResource(R.drawable.stampphysical2);
-                        physical.setId(phy_id);
-                        frame.addView(physical, prams);
-                        dvListener = new DragViewListener(physical);
-                        physical.setOnTouchListener(dvListener);
-                        break;
-                    case 3:
-                        int cul_id = View.generateViewId();
-                        ImageView culture = new ImageView(this);
-                        culture.setImageResource(R.drawable.stumpculture2);
-                        culture.setId(cul_id);
-                        frame.addView(culture, prams);
-                        dvListener = new DragViewListener(culture);
-                        culture.setOnTouchListener(dvListener);
-                        break;
-                }
-            }
+        super.onActivityResult(requestCode, resultCode, data);
+        String filePath = null;
+        if (resultCode != RESULT_OK) {
+            // キャル時
+            return;
         }
+        switch (requestCode) {
+            case BELOW_JELLYBEAN:
+                String[] colums = {MediaStore.MediaColumns.DATA};
+                Cursor cur = getContentResolver().query(data.getData(), colums, null, null, null);
+                cur.moveToNext();
+                filePath = cur.getString(0);
+                Log.d("tag", "JELLYBEANのfilePath ="+filePath);
+                cur.close();
+                break;
+            case ABOVE_KITKAT:
+                filePath = getFilePath4Kitkat(data);
+                Log.d("tag", "KITKATのfilePath="+filePath);
+                break;
+            case CAMERA_CAPTURE:
+                ContentResolver contentResolver = getContentResolver();
+                String[] columns = { MediaStore.Images.Media.DATA };
+                Cursor cursor = contentResolver.query(data.getData(), columns, null, null, null);
+                cursor.moveToFirst();
+                filePath = cursor.getString(0);
+                //filePath = getFilePath4Kitkat(data);
+                Log.d("tag", "CAMERA_CAPTUREのfilePath="+filePath);
+                break;
+        }
+
+        /*if (requestCode == 0) {
+
+            Uri resultUri = (data != null ? data.getData() : m_uri);
+
+            if (resultUri == null) {
+                // 取得失敗
+                return;
+            }
+
+            MediaScannerConnection.scanFile(
+                    this,
+                    new String[]{resultUri.getPath()},
+                    new String[]{"image/jpeg"},
+                    null
+            );
+            // 画像を設定
+
+            String[] colums = {MediaStore.MediaColumns.DATA};
+            Cursor cur = getContentResolver().query(data.getData(), colums, null, null, null);
+            cur.moveToNext();
+            filePath = cur.getString(0);
+            Log.d("tag", filePath);
+            String[] colums = {MediaStore.MediaColumns.DATA};
+            Cursor cur = getContentResolver().query(data.getData(), colums, null, null, null);
+            cur.moveToNext();
+            filePath = cur.getString(0);
+            Log.d("tag", filePath);
+            imageView.setImageURI(resultUri);
+        }*/
+        Log.d("tag",filePath);
+        ImageView imageView1 = (ImageView)findViewById(R.id.imageView1);
+    int ori = ImageUtil.getOrientation(filePath);
+        Bitmap bmImg = ImageUtil.createBitmap(filePath, ori );
+ if (bmImg == null) {
+     Log.d("tag","bmImgに入ってない");
+ }
+        imageView1.setImageBitmap(bmImg);
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public String getFilePath4Kitkat(Intent data) {
+        String filePath = null;
+        String[] strSplittendDocId = DocumentsContract.getDocumentId(data.getData()).split(":");
+        String strId = strSplittendDocId[strSplittendDocId.length - 1];
+
+        Cursor cur = getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                , new String[]{MediaStore.MediaColumns.DATA}
+                ,"_id=?"
+                , new String[]{strId}
+                , null
+        );
+        if (cur.moveToFirst()){
+            filePath = cur.getString(0);
+            Log.d("tag", filePath);
+        }
+        cur.close();
+        return filePath;
     }
 
     public void run() {
