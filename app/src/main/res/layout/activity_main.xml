@@ -30,6 +30,7 @@
                 android:id="@+id/framelayout"
                 android:layout_height="300dp"
                 android:layout_weight="1.06">
+
                 <ImageView
                     android:id="@+id/imageView1"
                     android:layout_width="match_parent"
@@ -52,28 +53,34 @@
                     android:layout_width="225dp">
 
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/stumpculture2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/cultureglay"
                         android:layout_weight="1"
                         android:id="@+id/Culture"
-                        style="?android:attr/borderlessButtonStyle"/>
+                        style="?android:attr/borderlessButtonStyle"
+                        android:scaleType="centerCrop"
+                        android:background="@null"/>
 
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/stampphysical2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/physicalglay"
                         android:layout_weight="1"
                         android:id="@+id/Physical"
-                        style="?android:attr/borderlessButtonStyle"/>
+                        style="?android:attr/borderlessButtonStyle"
+                        android:scaleType="centerCrop"
+                        android:background="@null"/>
 
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/stampemotional2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/emotionalglay"
                         android:id="@+id/Emotional"
                         android:layout_weight="1"
-                        style="?android:attr/borderlessButtonStyle"/>
+                        style="?android:attr/borderlessButtonStyle"
+                        android:scaleType="centerCrop"
+                        android:background="@null"/>
                 </LinearLayout>
 
                 <LinearLayout
