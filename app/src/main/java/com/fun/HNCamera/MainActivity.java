@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.fun.HNCamera.R;
@@ -46,7 +47,7 @@ import static android.R.attr.tag;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener {
 
     private Uri m_uri;
     private Uri fileUri;
@@ -56,10 +57,18 @@ public class MainActivity extends Activity {
     private final int PHY = 998;
     private final int CUL = 997;
     private final Handler handler = new Handler();
-    private int currentColor;
+    // private int currentColor;
     private static final int BELOW_JELLYBEAN = -1;
     private static final int ABOVE_KITKAT = 1;
     private static final int CAMERA_CAPTURE = 2;
+    private int currentColor;
+    private ImageButton Physical;
+    private ImageButton Culture;
+    private ImageButton Emotional;
+    private int physicalStatus = 0;
+    private int cultureStatus = 0;
+    private int emotionalStatus = 0;
+
     ImageView imageView1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,15 +147,15 @@ public class MainActivity extends Activity {
         Button button1 = (Button) findViewById(R.id.buttonPanel);
         Button button2 = (Button) findViewById(R.id.camera_button);
         Button save = (Button) findViewById(R.id.Savebutton);
-        //ImageButton stampbutton = (ImageButton)findViewById(R.id.imageButton);
-        ImageButton Culture = (ImageButton) findViewById(R.id.Culture);
-        ImageButton Physical = (ImageButton) findViewById(R.id.Physical);
-        ImageButton Emotional = (ImageButton) findViewById(R.id.Emotional);
+        Culture = (ImageButton) findViewById(R.id.Culture);
+        Culture.setOnClickListener(this);
+        Physical = (ImageButton) findViewById(R.id.Physical);
+        Physical.setOnClickListener(this);
+        Emotional = (ImageButton) findViewById(R.id.Emotional);
+        Emotional.setOnClickListener(this);
         button1.setOnClickListener(button1_onClick);
         button2.setOnClickListener(button2_onClick);
         save.setOnClickListener(save_click);
-        //Culture.setOnClickListener(_onClick);
-        //stampbutton.setOnClickListener(stampbutton_onclick);
     }
 
 
@@ -232,20 +241,21 @@ public class MainActivity extends Activity {
                 Cursor cur = getContentResolver().query(data.getData(), colums, null, null, null);
                 cur.moveToNext();
                 filePath = cur.getString(0);
-                Log.d("tag", "JELLYBEANのfilePath ="+filePath);
+                Log.d("tag", "JELLYBEANのfilePath =" + filePath);
                 cur.close();
                 break;
             case ABOVE_KITKAT:
                 filePath = getFilePath4Kitkat(data);
-                Log.d("tag", "KITKATのfilePath="+filePath);
+                Log.d("tag", "KITKATのfilePath=" + filePath);
                 break;
             case CAMERA_CAPTURE:
+
                 ContentResolver contentResolver = getContentResolver();
-                String[] columns = { MediaStore.Images.Media.DATA };
+                String[] columns = {MediaStore.Images.Media.DATA};
                 Cursor cursor = contentResolver.query(data.getData(), columns, null, null, null);
                 cursor.moveToFirst();
                 filePath = cursor.getString(0);
-                //filePath = getFilePath4Kitkat(data);
+
                 Log.d("tag", "CAMERA_CAPTUREのfilePath="+filePath);
                 break;
         }
@@ -398,6 +408,45 @@ public class MainActivity extends Activity {
         //押してあるか否か
         boolean checked = radioButton.isChecked();
 
+    }
+
+    public void onClick(View v) {
+        if (v == Physical) {
+            if (physicalStatus % 3 == 0) {
+                Physical.setImageResource(R.drawable.physical);
+                physicalStatus++;
+            } else if (physicalStatus % 3 == 1) {
+                Physical.setImageResource(R.drawable.physicalbad);
+                physicalStatus++;
+            } else if (physicalStatus % 3 == 2) {
+                Physical.setImageResource(R.drawable.physicalglay);
+                physicalStatus++;
+            }
+
+        } else if (v == Culture) {
+            if (cultureStatus % 3 == 0) {
+                Culture.setImageResource(R.drawable.culture);
+                cultureStatus++;
+            } else if (cultureStatus % 3 == 1) {
+                Culture.setImageResource(R.drawable.culturebad);
+                cultureStatus++;
+            } else if (cultureStatus % 3 == 2) {
+                Culture.setImageResource(R.drawable.cultureglay);
+                cultureStatus++;
+            }
+
+        } else if (v == Emotional) {
+            if (emotionalStatus % 3 == 0) {
+                Emotional.setImageResource(R.drawable.emotional);
+                emotionalStatus++;
+            } else if (emotionalStatus % 3 == 1) {
+                Emotional.setImageResource(R.drawable.emotionalbad);
+                emotionalStatus++;
+            } else if (emotionalStatus % 3 == 2) {
+                Emotional.setImageResource(R.drawable.emotionalglay);
+                emotionalStatus++;
+            }
+        }
     }
 }
 
